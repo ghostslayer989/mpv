@@ -85,7 +85,7 @@ class Window: NSWindow, NSWindowDelegate {
 
         cocoaCB = ccb
         title = cocoaCB.title
-        minSize = NSMakeSize(160, 90)
+        minSize = NSSize(width: 160, height: 90)
         collectionBehavior = .fullScreenPrimary
         delegate = self
 
@@ -210,8 +210,8 @@ class Window: NSWindow, NSWindowDelegate {
         cocoaCB.view?.layerContentsPlacement = .scaleProportionallyToFit
     }
 
-    func endAnimation(_ newFrame: NSRect = NSZeroRect) {
-        if !NSEqualRects(newFrame, NSZeroRect) && isAnimating {
+    func endAnimation(_ newFrame: NSRect = NSRect.zero) {
+        if !NSEqualRects(newFrame, NSRect.zero) && isAnimating {
             NSAnimationContext.runAnimationGroup({ (context) -> Void in
                 context.duration = 0.01
                 self.animator().setFrame(newFrame, display: true)
@@ -311,11 +311,11 @@ class Window: NSWindow, NSWindowDelegate {
         let cRect = contentRect(forFrameRect: rect)
         let dx = (cRect.size.width  - sz.width)  / 2
         let dy = (cRect.size.height - sz.height) / 2
-        return NSInsetRect(cRect, dx, dy)
+        return cRect.insetBy(dx: dx, dy: dy)
     }
 
     func aspectFit(rect r: NSRect, in rTarget: NSRect) -> NSRect {
-        var s = rTarget.width / r.width;
+        var s = rTarget.width / r.width
         if r.height*s > rTarget.height {
             s = rTarget.height / r.height
         }
@@ -332,7 +332,7 @@ class Window: NSWindow, NSWindowDelegate {
         let targetFrame = tScreen.frame
         let targetVisibleFrame = tScreen.visibleFrame
         let unfsScreenFrame = screen.frame
-        let visibleWindow = NSIntersectionRect(unfsScreenFrame, newFrame)
+        let visibleWindow = unfsScreenFrame.intersect(newFrame)
 
         // calculate visible area of every side
         let left = newFrame.origin.x - unfsScreenFrame.origin.x
@@ -407,26 +407,26 @@ class Window: NSWindow, NSWindowDelegate {
         let ncf: NSRect = contentRect(forFrameRect: nf)
 
         // screen bounds top and bottom
-        if NSMaxY(nf) > NSMaxY(vf) {
-            nf.origin.y = NSMaxY(vf) - NSHeight(nf)
+        if nf.maxY > vf.maxY {
+            nf.origin.y = vf.maxY - nf.height
         }
-        if NSMaxY(ncf) < NSMinY(vf) {
-            nf.origin.y = NSMinY(vf) + NSMinY(ncf) - NSMaxY(ncf)
+        if ncf.maxY < vf.minY {
+            nf.origin.y = vf.minY + ncf.minY - ncf.maxY
         }
 
         // screen bounds right and left
-        if NSMinX(nf) > NSMaxX(vf) {
-            nf.origin.x = NSMaxX(vf) - NSWidth(nf)
+        if nf.minX > vf.maxX {
+            nf.origin.x = vf.maxX - nf.width
         }
-        if NSMaxX(nf) < NSMinX(vf) {
-            nf.origin.x = NSMinX(vf)
+        if nf.maxX < vf.minX {
+            nf.origin.x = vf.minX
         }
 
-        if NSHeight(nf) < NSHeight(vf) && NSHeight(of) > NSHeight(vf) && !isInFullscreen {
+        if nf.height < vf.height && of.height > vf.height && !isInFullscreen {
             // If the window height is smaller than the visible frame, but it was
             // bigger previously recenter the smaller window vertically. This is
             // needed to counter the 'snap to top' behaviour.
-            nf.origin.y = (NSHeight(vf) - NSHeight(nf)) / 2
+            nf.origin.y = (vf.height - nf.height) / 2
         }
         return nf
     }

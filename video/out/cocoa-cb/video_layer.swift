@@ -176,7 +176,7 @@ class VideoLayer: CAOpenGLLayer {
         glGetIntegerv(GLenum(GL_VIEWPORT), &dims)
         surfaceSize = NSSize(width: CGFloat(dims[2]), height: CGFloat(dims[3]))
 
-        if NSEqualSizes(surfaceSize, NSZeroSize) {
+        if NSEqualSizes(surfaceSize, NSSize.zero) {
             surfaceSize = bounds.size
             surfaceSize.width *= contentsScale
             surfaceSize.height *= contentsScale
@@ -219,7 +219,7 @@ class VideoLayer: CAOpenGLLayer {
         if isUpdate && needsFlip {
             CGLSetCurrentContext(cglContext)
             if libmpv.isRenderUpdateFrame() {
-                libmpv.drawRender(NSZeroSize, bufferDepth, cglContext, skip: true)
+                libmpv.drawRender(NSSize.zero, bufferDepth, cglContext, skip: true)
             }
         }
         displayLock.unlock()
