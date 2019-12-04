@@ -31,7 +31,7 @@ extension NSScreen {
 
     public var displayName: String? {
         get {
-            var name: String? = nil
+            var name: String?
             var object: io_object_t
             var iter = io_iterator_t()
             let matching = IOServiceMatching("IODisplayConnect")
